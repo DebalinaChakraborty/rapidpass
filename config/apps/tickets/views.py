@@ -1,3 +1,4 @@
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -9,9 +10,10 @@ from apps.tickets.services.booking_service import BookingService
 User = get_user_model()
 
 class CreateBookingAPIView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        user = User.objects.first()
+        user = request.user
         if not user:
             return Response(
                 {"error": "No user found. Please create a user first."},
