@@ -9,6 +9,9 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email)
+        # Ensure a username exists for AbstractUser-based model
+        if not extra_fields.get('username'):
+            extra_fields['username'] = email.split('@')[0]
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
@@ -18,6 +21,9 @@ class UserManager(BaseUserManager):
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+        # Ensure superuser has a username
+        if not extra_fields.get('username'):
+            extra_fields['username'] = email.split('@')[0]
 
         return self.create_user(email, password, **extra_fields)
 
